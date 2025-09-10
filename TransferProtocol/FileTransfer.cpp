@@ -17,10 +17,11 @@ void FileTransfer::startTransfer()
 	m_file.seekg(0, std::ios::end);
 	fileSize = m_file.tellg();
 	m_file.seekg(0, std::ios::beg);
-	for (int i = 0; i < fileSize / BYTE_COUNT; i++)
+	for (int i = 0; i < (fileSize / BYTE_COUNT) + 1; i++)
 	{
 		sendNextChunk();
 	}
+	closesocket(*m_clientSocket.get());
 }
 
 void FileTransfer::sendNextChunk()
@@ -51,4 +52,9 @@ bool FileTransfer::receiveNextChunk()
 	std::vector<char> chunkBytes(data, data + bytesReceived);
 	m_chunks.deserialize(chunkBytes);
 	return true;
+}
+
+std::shared_ptr<FileChunk> FileTransfer::getChunks() const
+{
+	return std::make_shared<FileChunk>(m_chunks);
 }

@@ -3,6 +3,9 @@
 #include <thread>
 #include "ConnectionException.hpp"
 #include <vector>
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include "FileTransfer.h"
 #include <Windows.h>
 
@@ -21,8 +24,9 @@ private:
 	SOCKET m_serverSocket;
 	SOCKET m_clientSocket;
 
+	void peerInput();
 	void initializeServerSocket();
-	void createSocket();
+	void createSocket(SOCKET& sock);
 	void bindAndListen();
 	void handleRequests();
 	void handleNewClient(const SOCKET& clientSocket);

@@ -2,8 +2,19 @@
 
 Peer::Peer()
 {
-	createSocket();
-	initializeServerSocket();
+	int choice = 0;
+	std::cout << "Choose (0 for client, 1 for server): ";
+	std::cin >> choice;
+	if (!choice)
+	{
+		createSocket(m_clientSocket);
+		peerInput();
+	}
+	else
+	{
+		createSocket(m_serverSocket);
+		initializeServerSocket();
+	}
 }
 
 Peer::~Peer()
@@ -40,17 +51,42 @@ SOCKET Peer::getClientSocket() const
 	return m_clientSocket;
 }
 
+void Peer::peerInput()
+{
+	std::string peerAddress = "";
+	std::string fileName = "";
+	while (true)
+	{
+		std::cout << "Peer IP: ";
+		std::cin >> peerAddress;
+		try
+		{
+			peerConnect(peerAddress);
+			std::cout << "Connected!" << std::endl;
+			std::cout << "File Name: ";
+			std::cin >> fileName;
+			FileTransfer transfer(fileName, std::make_shared<SOCKET>(getClientSocket()));
+			transfer.startTransfer();
+			std::cout << "Transfer Done!" << std::endl;
+		}
+		catch (const std::exception&)
+		{
+			std::cout << "Connection Failed Try A Real IP" << std::endl;
+		}
+	}
+}
+
 void Peer::initializeServerSocket()
 {
 	std::thread serverThread = std::thread(&Peer::handleRequests, this);
 	serverThread.detach();
+	while (true);
 }
 
-void Peer::createSocket()
+void Peer::createSocket(SOCKET& sock)
 {
-	m_serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	m_clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (m_serverSocket == INVALID_SOCKET || m_clientSocket == INVALID_SOCKET)
+	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sock == INVALID_SOCKET)
 	{
 		//getting function name and socket error
 		throw ConnectionException(__FUNCTION__);
@@ -102,8 +138,9 @@ void Peer::handleNewClient(const SOCKET& clientSocket)
 	std::string fileName = "";
 	std::cout << "File Name: ";
 	std::cin >> fileName;
-	FileTransfer transfer = FileTransfer(fileName, std::make_shared<SOCKET>(clientSocket));
+	FileTransfer transfer(fileName, std::make_shared<SOCKET>(clientSocket));
 	while (transfer.receiveNextChunk());
+	transfer.getChunks()->writeChunksToFile(fileName);
 }
 
 SOCKET Peer::acceptClient() const

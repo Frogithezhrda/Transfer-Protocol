@@ -130,11 +130,14 @@
     <ClInclude Include="ConnectionException.hpp" />
     <ClInclude Include="FileChunk.h" />
     <ClInclude Include="FileException.hpp" />
+    <ClInclude Include="FileTransfer.h" />
     <ClInclude Include="Peer.h" />
+    <ClInclude Include="TransferException.hpp" />
     <ClInclude Include="WinInitializer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileChunk.cpp" />
+    <ClCompile Include="FileTransfer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Peer.cpp" />
   </ItemGroup>
