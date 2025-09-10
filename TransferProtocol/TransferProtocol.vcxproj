@@ -128,11 +128,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConnectionException.hpp" />
-    <ClInclude Include="InputException.hpp" />
+    <ClInclude Include="FileChunk.h" />
+    <ClInclude Include="FileException.hpp" />
     <ClInclude Include="Peer.h" />
     <ClInclude Include="WinInitializer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileChunk.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Peer.cpp" />
   </ItemGroup>

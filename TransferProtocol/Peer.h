@@ -1,9 +1,10 @@
 #pragma once
-#include <Windows.h>
 #include <string>
 #include <thread>
 #include "ConnectionException.hpp"
 #include <vector>
+#include "FileTransfer.h"
+#include <Windows.h>
 
 constexpr const int PORT = 6767;
 constexpr const char* HOST = "127.0.0.1";
@@ -15,6 +16,7 @@ public:
 	~Peer();
 	void peerConnect(const std::string& hostIP) const;
 	void peerDisconnect() const;
+	SOCKET getClientSocket() const;
 private:
 	SOCKET m_serverSocket;
 	SOCKET m_clientSocket;

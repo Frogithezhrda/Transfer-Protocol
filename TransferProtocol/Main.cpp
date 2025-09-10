@@ -10,7 +10,6 @@ void main(void)
 	try
 	{
 		Peer peer;
-		Sleep(1);
 		peerInput(&peer);
 	}
 	catch (const std::exception& exception)
@@ -22,6 +21,7 @@ void main(void)
 void peerInput(Peer* peer)
 {
 	std::string peerAddress = "";
+	std::string fileName = "";
 	while (true)
 	{
 		std::cout << "Peer IP: ";
@@ -30,11 +30,14 @@ void peerInput(Peer* peer)
 		{
 			peer->peerConnect(peerAddress);
 			std::cout << "Connected!" << std::endl;
-			break;
+			std::cout << "File Name: ";
+			std::cin >> fileName;
+			FileTransfer transfer = FileTransfer(fileName, std::make_shared<SOCKET>(peer->getClientSocket()));
+			transfer.startTransfer();
+			std::cout << "Transfer Done!" << std::endl;
 		}
 		catch (const std::exception&)
 		{
-			peer->peerDisconnect();
 			std::cout << "Connection Failed Try A Real IP" << std::endl;
 		}
 	}

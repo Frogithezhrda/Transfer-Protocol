@@ -3,13 +3,13 @@
 #include <string>
 #include <iostream>
 
-class InputException : public std::exception
+class TransferException : public std::exception
 {
 public:
 
-    InputException(const std::string& message)
+    TransferException(const std::string& message)
     {
-        this->m_message = "Input Error: " + message + "\n";
+        this->m_message = "Transfer Error: " + message + "\n";
     }
 
     virtual char const* what() const throw()

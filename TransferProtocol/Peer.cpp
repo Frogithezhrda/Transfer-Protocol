@@ -35,6 +35,11 @@ void Peer::peerDisconnect() const
 	closesocket(this->m_clientSocket);
 }
 
+SOCKET Peer::getClientSocket() const
+{
+	return m_clientSocket;
+}
+
 void Peer::initializeServerSocket()
 {
 	std::thread serverThread = std::thread(&Peer::handleRequests, this);
@@ -75,19 +80,16 @@ void Peer::bindAndListen()
 
 void Peer::handleRequests()
 {
-	std::vector<std::thread> connections;
+	//std::vector<std::thread> connections;
 	try
 	{
 		bindAndListen();
-		while (true)
-		{
-			// and add then to the list of handlers
-			std::cout << "Waiting for client connection request" << std::endl;
-			//getting the sockets
-			SOCKET clientSocket = acceptClient();
-			//putting the threads
-			connections.emplace_back(std::thread(&Peer::handleNewClient, this, clientSocket));
-		}
+		// and add then to the list of handlers
+		//getting the sockets
+		SOCKET clientSocket = acceptClient();
+		//putting the threads
+		//connections.emplace_back(std::thread(&Peer::handleNewClient, this, clientSocket));
+		handleNewClient(clientSocket);
 	}
 	catch (const std::exception& exception)
 	{
@@ -97,7 +99,11 @@ void Peer::handleRequests()
 
 void Peer::handleNewClient(const SOCKET& clientSocket)
 {
-
+	std::string fileName = "";
+	std::cout << "File Name: ";
+	std::cin >> fileName;
+	FileTransfer transfer = FileTransfer(fileName, std::make_shared<SOCKET>(clientSocket));
+	while (transfer.receiveNextChunk());
 }
 
 SOCKET Peer::acceptClient() const
