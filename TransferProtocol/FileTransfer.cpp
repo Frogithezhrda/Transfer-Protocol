@@ -18,7 +18,7 @@ void FileTransfer::startTransfer()
 	m_file.seekg(0, std::ios::end);
 	fileSize = m_file.tellg();
 	m_file.seekg(0, std::ios::beg);
-	for (int i = 0; i < (fileSize / BYTE_COUNT) + 1; i++)
+	while (!m_file.eof())
 	{
 		sendNextChunk();
 	}
@@ -36,8 +36,7 @@ void FileTransfer::sendNextChunk()
 
 void FileTransfer::sendChunk(Chunk chunk)
 {
-	std::string resultString = std::string(chunk.chunk.begin(), chunk.chunk.end());
-	if (send(*m_clientSocket.get(), resultString.c_str(), chunk.chunkSize, 0) == SOCKET_ERROR)
+	if (send(*m_clientSocket.get(), chunk.chunk.data(), chunk.chunkSize, 0) == SOCKET_ERROR)
 	{
 		throw TransferException("Could Not Send Data.");
 	}
@@ -45,7 +44,7 @@ void FileTransfer::sendChunk(Chunk chunk)
 
 bool FileTransfer::receiveNextChunk()
 {
-	unsigned char data[BYTE_COUNT] = { 0 };
+	unsigned char* data = new unsigned char[BYTE_COUNT];
 	long bytesReceived = 0;
 
 	bytesReceived = recv(*m_clientSocket.get(), reinterpret_cast<char*>(data), BYTE_COUNT, 0);
@@ -54,11 +53,12 @@ bool FileTransfer::receiveNextChunk()
 		return false;
 	}
 	std::vector<char> chunkBytes(data, data + bytesReceived);
+	delete[] data;
 	m_chunks.deserialize(chunkBytes);
 	return true;
 }
 
-std::shared_ptr<FileChunk> FileTransfer::getChunks() const
+FileChunk* FileTransfer::getChunks()
 {
-	return std::make_shared<FileChunk>(m_chunks);
+	return &m_chunks;
 }

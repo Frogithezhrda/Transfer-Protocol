@@ -28,7 +28,7 @@ void FileChunk::deserialize(const std::vector<char>& chunkBytes)
 
 void FileChunk::writeChunksToFile(const std::string& fileName)
 {
-	std::ofstream file(fileName, std::ios::binary);
+	std::ofstream file(fileName, std::ios::binary | std::ios::app);
 	if (!file) throw FileException("Cannot open file");
 
 	for (const auto& chunk : chunks) 
@@ -36,4 +36,10 @@ void FileChunk::writeChunksToFile(const std::string& fileName)
 		file.write(chunk.chunk.data(), chunk.chunkSize);
 	}
 	file.close();
+	chunks.clear();
+}
+
+std::vector<Chunk>& FileChunk::getFileChunks() 
+{
+	return this->chunks;
 }

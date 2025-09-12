@@ -139,10 +139,19 @@ void Peer::handleRequests()
 void Peer::handleNewClient(const SOCKET& clientSocket)
 {
 	std::string fileName = "";
+	long i = 0;
 	std::cout << "File Name: ";
 	std::cin >> fileName;
 	FileTransfer transfer(fileName, std::make_shared<SOCKET>(clientSocket));
-	while (transfer.receiveNextChunk());
+	while (transfer.receiveNextChunk())
+	{
+		i++;
+		if (i % 4000 == 0)
+		{
+			std::cout << "Current Chunks: " << transfer.getChunks()->getFileChunks().size();
+			transfer.getChunks()->writeChunksToFile(fileName);
+		}
+	}
 	transfer.getChunks()->writeChunksToFile(fileName);
 	std::cout << "Got The File! " << fileName << std::endl;
 	options();

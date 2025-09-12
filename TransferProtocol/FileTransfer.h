@@ -12,7 +12,7 @@ public:
 	void startTransfer();
 	void sendNextChunk();
 	bool receiveNextChunk();
-	std::shared_ptr<FileChunk> getChunks() const;
+	FileChunk* getChunks();
 
 private:
 	FileChunk m_chunks;
