@@ -30,4 +30,4 @@ The protocol is confirmed working and capable of handling very large files.
 
 Transfer speed depends on your network connection.
 
-Occasionally, connection issues may happen—this is why using ZeroTier or Hamachi is strongly recommended.
+Occasionally, connection issues may happen.
