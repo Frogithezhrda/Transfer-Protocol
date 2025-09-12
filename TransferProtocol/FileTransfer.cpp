@@ -14,6 +14,7 @@ FileTransfer::~FileTransfer()
 void FileTransfer::startTransfer()
 {
 	long fileSize = 0;
+	clock_t start = clock();
 	m_file.seekg(0, std::ios::end);
 	fileSize = m_file.tellg();
 	m_file.seekg(0, std::ios::beg);
@@ -21,7 +22,9 @@ void FileTransfer::startTransfer()
 	{
 		sendNextChunk();
 	}
-	std::cout << "Sended Message." << std::endl;
+	clock_t end = clock();
+	double time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+	std::cout << "Sended Message. Ran For - " << time << "s" << std::endl;
 	closesocket(*m_clientSocket.get());
 }
 
@@ -30,6 +33,7 @@ void FileTransfer::sendNextChunk()
 	Chunk chunk = m_chunks.serialize(m_file);
 	sendChunk(chunk);
 }
+
 void FileTransfer::sendChunk(Chunk chunk)
 {
 	std::string resultString = std::string(chunk.chunk.begin(), chunk.chunk.end());

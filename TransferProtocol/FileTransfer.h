@@ -2,6 +2,7 @@
 #include "FileChunk.h"
 #include <WinSock2.h>
 #include "TransferException.hpp"
+#include <ctime> 
 
 class FileTransfer
 {
