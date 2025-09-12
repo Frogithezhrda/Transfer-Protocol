@@ -24,6 +24,7 @@ private:
 	SOCKET m_serverSocket;
 	SOCKET m_clientSocket;
 
+	void options();
 	void peerInput();
 	void initializeServerSocket();
 	void createSocket(SOCKET& sock);

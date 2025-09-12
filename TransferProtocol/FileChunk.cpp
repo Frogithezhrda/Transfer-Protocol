@@ -6,8 +6,11 @@ Chunk FileChunk::serialize(std::ifstream& file) const
 	char* fileBytes = new char[BYTE_COUNT];
 	if (file.read(fileBytes, BYTE_COUNT))
 	{
-		delete[] fileBytes;
-		throw FileException(__FUNCTION__);
+		if (file.gcount() == 0)
+		{
+			delete[] fileBytes;
+			throw FileException(__FUNCTION__);
+		}
 	}
 	chunk.chunk = std::vector<char>(fileBytes, fileBytes + BYTE_COUNT);
 	chunk.chunkSize = file.gcount();
@@ -26,7 +29,7 @@ void FileChunk::deserialize(const std::vector<char>& chunkBytes)
 void FileChunk::writeChunksToFile(const std::string& fileName)
 {
 	std::ofstream file(fileName, std::ios::binary);
-	if (!file) throw std::runtime_error("Cannot open file");
+	if (!file) throw FileException("Cannot open file");
 
 	for (const auto& chunk : chunks) 
 	{

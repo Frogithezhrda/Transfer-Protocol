@@ -21,6 +21,7 @@ void FileTransfer::startTransfer()
 	{
 		sendNextChunk();
 	}
+	std::cout << "Sended Message." << std::endl;
 	closesocket(*m_clientSocket.get());
 }
 
@@ -36,7 +37,6 @@ void FileTransfer::sendChunk(Chunk chunk)
 	{
 		throw TransferException("Could Not Send Data.");
 	}
-	std::cout << "Sended Message." << std::endl;
 }
 
 bool FileTransfer::receiveNextChunk()

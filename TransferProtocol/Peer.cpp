@@ -2,19 +2,7 @@
 
 Peer::Peer()
 {
-	int choice = 0;
-	std::cout << "Choose (0 for client, 1 for server): ";
-	std::cin >> choice;
-	if (!choice)
-	{
-		createSocket(m_clientSocket);
-		peerInput();
-	}
-	else
-	{
-		createSocket(m_serverSocket);
-		initializeServerSocket();
-	}
+	options();
 }
 
 Peer::~Peer()
@@ -51,6 +39,22 @@ SOCKET Peer::getClientSocket() const
 	return m_clientSocket;
 }
 
+void Peer::options()
+{
+	int choice = 0;
+	std::cout << "Choose (0 for client, 1 for server): ";
+	std::cin >> choice;
+	if (!choice)
+	{
+		peerInput();
+	}
+	else
+	{
+		createSocket(m_serverSocket);
+		handleRequests();
+	}
+}
+
 void Peer::peerInput()
 {
 	std::string peerAddress = "";
@@ -61,6 +65,7 @@ void Peer::peerInput()
 		std::cin >> peerAddress;
 		try
 		{
+			createSocket(m_clientSocket);
 			peerConnect(peerAddress);
 			std::cout << "Connected!" << std::endl;
 			std::cout << "File Name: ";
@@ -68,19 +73,17 @@ void Peer::peerInput()
 			FileTransfer transfer(fileName, std::make_shared<SOCKET>(getClientSocket()));
 			transfer.startTransfer();
 			std::cout << "Transfer Done!" << std::endl;
+			options();
 		}
-		catch (const std::exception&)
+		catch (const std::exception& e)
 		{
-			std::cout << "Connection Failed Try A Real IP" << std::endl;
+			std::cout << e.what() << std::endl;
 		}
 	}
 }
 
 void Peer::initializeServerSocket()
 {
-	std::thread serverThread = std::thread(&Peer::handleRequests, this);
-	serverThread.detach();
-	while (true);
 }
 
 void Peer::createSocket(SOCKET& sock)
@@ -141,6 +144,8 @@ void Peer::handleNewClient(const SOCKET& clientSocket)
 	FileTransfer transfer(fileName, std::make_shared<SOCKET>(clientSocket));
 	while (transfer.receiveNextChunk());
 	transfer.getChunks()->writeChunksToFile(fileName);
+	std::cout << "Got The File! " << fileName << std::endl;
+	options();
 }
 
 SOCKET Peer::acceptClient() const
